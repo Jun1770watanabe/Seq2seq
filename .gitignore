@@ -1,4 +1,6 @@
 __pycache__/
+example/
+dev/
 
 result/
 test_data/
