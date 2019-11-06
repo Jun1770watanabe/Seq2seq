@@ -8,6 +8,7 @@ import chainer.links as L
 from chainer import training
 from chainer.training import extensions
 import chainerx
+import tenkey_filter_V2 as tf2
 
 UNK = 0
 EOS = 1
@@ -35,7 +36,6 @@ def exchange_input(text):
     return text
 
 def check_quit(text):
-    text = text.lower()
     if text == "quit":
         print(">> Exit the program.")
         exit()
@@ -92,7 +92,9 @@ def main():
     while True:
         print(">> please input test sentence.")
         test_sentence = input()
+        test_sentence = test_sentence.lower()
         check_quit(test_sentence)
+        test_sentence = tf2.KeyinputFilter.alphab2num(test_sentence)
         test_sentence = exchange_input(test_sentence)
         test_source = load_data_from_str(source_ids, test_sentence)
         result = model.translate([model.xp.array(test_source[0])])[0]     
