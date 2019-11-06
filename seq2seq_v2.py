@@ -89,8 +89,9 @@ class Seq2seq(chainer.Chain):
 
         for i in range(wy.data[0].shape[0]):
             ys = self.xp.argmax(wy.data, axis=1).astype(numpy.int32)
-            print(ys)
-            
+            print(ys[0])
+            print(len(ys))
+            exit()
             if ys[0] == 1:
                 break
 
