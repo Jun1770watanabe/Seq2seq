@@ -91,21 +91,11 @@ class Seq2seq(chainer.Chain):
 
         for i in range(wy.data[0].shape[0]):
             ys = self.xp.argmax(wy.data, axis=1).astype(numpy.int32)
-<<<<<<< HEAD
-            print(ys[0])
-            print(len(ys))
-            exit()
-            if ys[0] == 1:
-                break
 
-            re_key = [k1 for k1, v1 in t_vocab.items() if v1 == xs[0][-(i+1)]]
-            an_key = [k2 for k2, v2 in s_vocab.items() if v2 == ys[0]]
-=======
             if ys[0] == 1 or ys[0] == 0 or xs[0][-(i+1)]:
                 return ys
             x_key = [k1 for k1, v1 in s_vocab.items() if v1 == xs[0][-(i+1)]]
             y_key = [k2 for k2, v2 in t_vocab.items() if v2 == ys[0]]
->>>>>>> 70a68ed8cea4fe7a2d16023c11fe3ced599256c0
 
             if len(x_key[0]) == len(y_key[0]):
                 return ys
@@ -123,8 +113,6 @@ class Seq2seq(chainer.Chain):
             h, c, _ = self.encoder(None, None, exs)
             ys = self.xp.full(batch, EOS, numpy.int32)
             result = []
-            print(xs)
-            print(len(xs[0]))
             for i in range(max_length):
                 eys = self.embed_y(ys)
                 eys = F.split_axis(eys, batch, 0)
@@ -132,7 +120,6 @@ class Seq2seq(chainer.Chain):
                 cys = F.concat(ys, axis=0)
                 wy = self.W(cys)
                 if len(xs[0]) > i:
-                    print("aaa")
                     ys = self.check_num_of_character(
                         wy, xs, self.s_vocab, self.t_vocab, max_length)
                 else:

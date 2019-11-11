@@ -1,10 +1,40 @@
-but mnet please don7t add green peppers .
-i picked it up inside the sinai ruins so it7s still dry .
-it moreover in the park we won7t have to prepare anything special .
-excellent fifteen but that restaurant is very popular so advance booking is essential .
-don7t be late .
-i stayed up late at night and i watched the moon from my window .
-but i7ve never talked with my parents about <UNK> .
-sos look at the <UNK> fifo over there .
-i7m up for anything .
-was that an earthquake .
+------------------ 1 --------------------
+# source : 474 71447 093123 39774 133 44337 0300342 .
+# result : but mnet please don7t add green peppers .
+# answer : But Harry please don7t add green peppers .
+------------------ 2 --------------------
+# source : 8 083833 84 70 872833 473 312493 47872 29 8472 24899 347 .
+# result : i picked it up inside the sinai ruins so it7s still dry .
+# answer : I picked it up inside the castle ruins so it7s still dry .
+------------------ 3 --------------------
+# source : 84 8472 87 473 0148 23 29774 7143 49 0430143 17747874 2033819 .
+# result : it moreover in the park we won7t have to prepare anything special .
+# answer : If it7s in the park we won7t have to prepare anything special .
+------------------ 4 --------------------
+# source : 323399374 8331 474 4714 4324174174 82 4347 0907914 29 1341733 4998874 82 322374819 .
+# result : excellent fifteen but that restaurant is very popular so advance booking is essential .
+# answer : Excellent idea but that restaurant is very popular so advance booking is essential .
+------------------ 5 --------------------
+# source : 39774 43 9143 .
+# result : don7t be late .
+# answer : Don7t be late .
+------------------ 6 --------------------
+# source : 8 241733 70 9143 14 78474 173 8 2143733 473 7997 4497 77 287392 .
+# result : i stayed up late at night and i watched the moon from my window .
+# answer : I stayed up late at night and I watched the moon from my window .
+------------------ 7 --------------------
+# source : 474 8743 73434 419833 2847 77 0143742 14974 418749 .
+# result : but i7ve never talked with my parents about <UNK> .
+# answer : But I7ve never talked with my parents about rakugo .
+------------------ 8 --------------------
+# source : 292 9998 14 473 49443972 4849 9434 47343 .
+# result : sos look at the <UNK> fifo over there .
+# answer : Wow look at the gorgeous girl over there .
+------------------ 9 --------------------
+# source : 877 70 494 17747874 .
+# result : i7m up for anything .
+# answer : I7m up for anything .
+------------------ 10 --------------------
+# source : 212 4714 17 3144717183 .
+# result : was that an earthquake .
+# answer : Was that an earthquake .
