@@ -1,6 +1,7 @@
 import numpy as np
 import argparse
-import seq2seq 
+# import seq2seq 
+import seq2seq_v2 
 
 import chainer
 import chainer.functions as F
@@ -62,8 +63,8 @@ def main():
     args = parser.parse_args()
 
     # load vocabulary file
-    source_ids = seq2seq.load_vocabulary(args.SOURCE_VOCAB)
-    target_ids = seq2seq.load_vocabulary(args.TARGET_VOCAB)
+    source_ids = seq2seq_v2.load_vocabulary(args.SOURCE_VOCAB)
+    target_ids = seq2seq_v2.load_vocabulary(args.TARGET_VOCAB)
 
     # Set the current device
     device = chainer.get_device(args.device)
@@ -71,7 +72,7 @@ def main():
 
     # Setup model
     print("==== model loading ... ====")
-    model = seq2seq.Seq2seq(args.layer, len(source_ids), len(target_ids), args.unit)
+    model = seq2seq_v2.Seq2seq(args.layer, source_ids, target_ids, args.unit)
     model.to_device(device)
 
     # replace keys and values

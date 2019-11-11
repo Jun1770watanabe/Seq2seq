@@ -105,21 +105,27 @@ class Seq2seq(chainer.Chain):
 
     def translate(self, xs, max_length=100):
         batch = len(xs)
+
         with chainer.no_backprop_mode(), chainer.using_config('train', False):
             xs = [x[::-1] for x in xs] # sort inverse
             exs = sequence_embed(self.embed_x, xs)
             h, c, _ = self.encoder(None, None, exs)
             ys = self.xp.full(batch, EOS, numpy.int32)
             result = []
+            print(xs)
+            print(len(xs[0]))
             for i in range(max_length):
                 eys = self.embed_y(ys)
                 eys = F.split_axis(eys, batch, 0)
                 h, c, ys = self.decoder(h, c, eys)
                 cys = F.concat(ys, axis=0)
                 wy = self.W(cys)
-                ys = self.check_num_of_character(
-                    wy, xs, self.s_vocab, self.t_vocab, max_length)
-                # ys = self.xp.argmax(wy.array, axis=1).astype(numpy.int32)
+                if len(xs[0]) > i:
+                    print("aaa")
+                    ys = self.check_num_of_character(
+                        wy, xs, self.s_vocab, self.t_vocab, max_length)
+                else:
+                    ys = self.xp.argmax(wy.array, axis=1).astype(numpy.int32)
                 result.append(ys)
 
         # Using `xp.concatenate(...)` instead of `xp.stack(result)` here to
