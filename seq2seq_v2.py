@@ -85,10 +85,13 @@ class Seq2seq(chainer.Chain):
         check same or not 
         between number of character of result word and number of character of answer
         """
-        dummy = -100
+
+        dummy = -100000000
+        initial = self.xp.argmax(wy.data, axis=1).astype(numpy.int32)
 
         for i in range(wy.data[0].shape[0]):
             ys = self.xp.argmax(wy.data, axis=1).astype(numpy.int32)
+<<<<<<< HEAD
             print(ys[0])
             print(len(ys))
             exit()
@@ -97,13 +100,19 @@ class Seq2seq(chainer.Chain):
 
             re_key = [k1 for k1, v1 in t_vocab.items() if v1 == xs[0][-(i+1)]]
             an_key = [k2 for k2, v2 in s_vocab.items() if v2 == ys[0]]
+=======
+            if ys[0] == 1 or ys[0] == 0 or xs[0][-(i+1)]:
+                return ys
+            x_key = [k1 for k1, v1 in s_vocab.items() if v1 == xs[0][-(i+1)]]
+            y_key = [k2 for k2, v2 in t_vocab.items() if v2 == ys[0]]
+>>>>>>> 70a68ed8cea4fe7a2d16023c11fe3ced599256c0
 
-            if len(re_key[0]) == len(an_key[0]):
+            if len(x_key[0]) == len(y_key[0]):
                 return ys
             else:
                 wy.array[0][ys[0]] = dummy
-        # ys = self.xp.argmax(wy.array, axis=1).astype(numpy.int32)
-        # return ys
+
+        return initial
 
     def translate(self, xs, max_length=100):
         batch = len(xs)
@@ -119,16 +128,15 @@ class Seq2seq(chainer.Chain):
                 h, c, ys = self.decoder(h, c, eys)
                 cys = F.concat(ys, axis=0)
                 wy = self.W(cys)
-                print(wy.data.shape)
                 ys = self.check_num_of_character(
                     wy, xs, self.s_vocab, self.t_vocab, max_length)
                 # ys = self.xp.argmax(wy.array, axis=1).astype(numpy.int32)
                 result.append(ys)
+
         # Using `xp.concatenate(...)` instead of `xp.stack(result)` here to
         # support NumPy 1.9.
         result = chainer.get_device('@numpy').send(
             self.xp.concatenate([x[None, :] for x in result]).T)
-        print(result)
 
         # Remove EOS taggs
         outs = []
@@ -137,7 +145,6 @@ class Seq2seq(chainer.Chain):
             if len(inds) > 0:
                 y = y[:inds[0, 0]]
             outs.append(y)
-        print("cccccc")
         return outs
 
 
@@ -411,8 +418,6 @@ def main():
             source, target = test_data[numpy.random.choice(len(test_data))]
             print(">> start transalate in Validation <<")
             result = model.translate([model.xp.array(source)])[0]
-            print("dddddd")
-            exit()
 
             source_sentence = ' '.join([source_words[x] for x in source])
             target_sentence = ' '.join([target_words[y] for y in target])
@@ -423,10 +428,10 @@ def main():
 
         trainer.extend(
             translate, trigger=(args.validation_interval, 'iteration'))
-        trainer.extend(
-            CalculateBleu(
-                model, test_data, 'validation/main/bleu', device),
-            trigger=(args.validation_interval, 'iteration'))
+        # trainer.extend(
+        #     CalculateBleu(
+        #         model, test_data, 'validation/main/bleu', device),
+        #     trigger=(args.validation_interval, 'iteration'))
 
     if args.resume is not None:
         # Resume from a snapshot

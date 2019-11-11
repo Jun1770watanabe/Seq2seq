@@ -8,6 +8,7 @@ import chainer.links as L
 from chainer import training
 from chainer.training import extensions
 import chainerx
+import tenkey_filter_V2 as tf2
 
 UNK = 0
 EOS = 1
@@ -35,11 +36,16 @@ def exchange_input(text):
     return text
 
 def check_quit(text):
-    text = text.lower()
     if text == "quit":
         print(">> Exit the program.")
         exit()
 
+def main_process(test_sentence):
+    test_sentence = test_sentence.lower()
+    check_quit(test_sentence)
+    test_sentence = tf2.KeyinputFilter.alphab2num(test_sentence)
+    test_sentence = exchange_input(test_sentence)
+    return test_sentence
 
 def main():
     parser = argparse.ArgumentParser(description='test program: test')
@@ -82,61 +88,51 @@ def main():
         # Resume from a snapshot
         chainer.serializers.load_npz(args.resume, model, "updater/model:main/")
 
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    print("$$$  '5'...space   '6'...period  $$$")
-    print("$$$                              $$$")
-    print("$$$  if you want to exit,        $$$")
-    print("$$$      please input \"quit\"     $$$")
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    # #######################################
+    # # interpriter version
+    # #######################################
+    # print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    # print("$$$  '5'...space   '6'...period  $$$")
+    # print("$$$                              $$$")
+    # print("$$$  if you want to exit,        $$$")
+    # print("$$$      please input \"quit\"     $$$")
+    # print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
-    while True:
-        print(">> please input test sentence.")
-        test_sentence = input()
-        check_quit(test_sentence)
-        test_sentence = exchange_input(test_sentence)
-        test_source = load_data_from_str(source_ids, test_sentence)
-        result = model.translate([model.xp.array(test_source[0])])[0]     
-        result_sentence = ' '.join([target_words[y] for y in result])
-        print("--------------------------------------")
-        print('# source : ' + test_sentence)
-        print('# result : ' + result_sentence)
+    # while True:
+    #     print(">> please input test sentence.")
+    #     test_sentence = input()
+    #     test_sentence = main_process(test_sentence)
+    #     test_source = load_data_from_str(source_ids, test_sentence)
+    #     result = model.translate([model.xp.array(test_source[0])])[0]     
+    #     result_sentence = ' '.join([target_words[y] for y in result])
+    #     print("--------------------------------------")
+    #     print('# source : ' + test_sentence)
+    #     print('# result : ' + result_sentence)
 
+    ##########################################
+    # file writing version
+    ##########################################
+    if args.testset is not None:
+        test_data = load_data_file(args.testset)
+        answer_data = load_data_file(args.answerset)
+        result_text = []
+        for i in range(len(test_data)):
+            test_sentence = main_process(test_data[i])
+            test_source = load_data_from_str(source_ids, test_sentence)
+            result = model.translate([model.xp.array(test_source[0])])[0]        
+            result_sentence = ' '.join([target_words[y] for y in result])
 
-    # # test
-    # # one sentence
-    # test_sentence = "41314 2724372 494 793347 38489817 100983148972 ."
-    # test_source = load_data_sentence(source_ids, test_sentence)
-    # result = model.translate([model.xp.array(test_source[0])])[0]        
-    # result_sentence = ' '.join([target_words[y] for y in result])
-    # print("--------------------------------------")
-    # print('# source : ' + test_sentence)
-    # print('# result : ' + result_sentence)
-    # exit()
+            print("------------------ {} --------------------".format(i+1))
+            print('# source : ' + test_sentence)
+            print('# result : ' + result_sentence)
+            print("# answer : " + answer_data[i])
 
+            result_text.append(result_sentence)
+        output = '\n'.join(result_text)
 
-    # # test for text file
-    # if args.testset is not None:
-    #     test_data = load_data_file(args.testset)
-    #     answer_data = load_data_file(args.answerset)
-    #     result_text = ""
-    #     for i in range(100):
-    #         test_sentence = test_data[i]
-    #         answer_sentence = answer_data[i]
-    #         test_source = load_data_sentence(source_ids, test_sentence)
-    #         result = model.translate([model.xp.array(test_source[0])])[0]        
-    #         result_sentence = ' '.join([target_words[y] for y in result])
-
-    #         print("------------------ {} --------------------".format(i))
-    #         print('# source : ' + test_sentence)
-    #         print('# result : ' + result_sentence)
-    #         print("# answer : " + answer_sentence)
-
-    #         result_text += result_sentence
-    #         result_text += "\n"
-
-    #     with open("result.en", encoding="utf-8", mode="w") as f:
-    #         f.write(result_text)
-    #         f.close()
+        with open("result_2.en", encoding="utf-8", mode="w") as f:
+            f.write(output)
+            f.close()
 
 if __name__ == '__main__':
     main()

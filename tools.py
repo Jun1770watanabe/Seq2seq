@@ -11,7 +11,7 @@ def make_dictionary(text):
     output = {}
     text_list = text.split("\n")
     for i in range(len(text_list)):
-        output[i+1] = text_list[-i]
+        output[i+1] = text_list[i]
     return output
 
 def insert_char(text):
@@ -19,14 +19,16 @@ def insert_char(text):
 
 def write_row(text, num):
     output = ""
+    outlist = []
 
     text_dict = make_dictionary(text)
     for k in text_dict.keys():
         if k == num+1:
             break
         else:
-            output += text_dict[k]
-            output += "\n"
+            outlist.append(text_dict[k])
+            # output += "\n"
+    output = '\n'.join(outlist)
     return output
 
 def textfile_io(ifile_name, ofile_name):
@@ -37,18 +39,18 @@ def textfile_io(ifile_name, ofile_name):
     call some functions that have process you want to do
     """
     # read text data
-    with open(ifile_name, encoding="utf-8") as f:
+    with io.open(ifile_name, encoding="utf-8") as f:
         text_data = f.read()
         f.close()
 
     result = ""
     ######################################################
     # result = tools_filewriting.insert_char(text_data)
-    result = write_row(text_data, 10)
+    result = write_row(text_data, 5000000)
     ######################################################
 
     # write result
-    with open(ofile_name, "w", encoding="utf-8") as f:
+    with io.open(ofile_name, "w", encoding="utf-8") as f:
         f.write(result)
         f.close()
 
