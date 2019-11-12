@@ -39,6 +39,7 @@ def exchange_input(text):
 def check_quit(text):
     if text == "quit":
         print(">> Exit the program.")
+        print(">> bye.")
         exit()
 
 def main_process(test_sentence):

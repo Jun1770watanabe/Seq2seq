@@ -14,7 +14,7 @@ def plot_one_data(x, y):
     plt.show()
 
 def plot_two_data(x1, y1, x2, y2):
-    plt.plot(x1, y1, label="model_0.1mil", marker="o", linewidth=3)
+    plt.plot(x1, y1, label="model_5mil", marker="o", linewidth=3)
     plt.plot(x2, y2, label="model_20mil", marker="o", linewidth=3)
     plt.legend(loc="lower right", fontsize=20)
 
@@ -78,7 +78,7 @@ def main():
 
 
     # two parameter
-    path1 = "result/model_0.1mil_mbs128_v4/log"
+    path1 = "result/model_5mil_mbs128_v5/log"
     path2 = "result/model_20mil_mbs128_v5/log"
 
     x1,y1 = read_dict_pass(path1)
