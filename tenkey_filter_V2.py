@@ -216,7 +216,6 @@ class KeyinputFilter:
         'ω': 'omega',
 
 
-        '\'': '7', #TODO
         '’': ' ',
         '@': ' ',
         '©': ' ',
@@ -256,7 +255,7 @@ class KeyinputFilter:
 
     @classmethod
     def _preprocess(cls, ifile_name):
-        digit_pattern = re.compile(r'\d')        
+        digit_pattern = re.compile(r'\d')      
         output = ""
         n_lines = tools.count_lines(ifile_name)
         bar = progressbar.ProgressBar()
@@ -273,10 +272,27 @@ class KeyinputFilter:
                     line = line.replace(k, cls._SYMBOL[k])
                 output += line
 
+        output = single_quote(output)
         output = output.replace('\n', ' .\n')
         output = re.sub(r' {2,}', r' ', output)
 
         return output
+
+    @classmethod
+    def single_quote(cls, text):
+        sinqt_pattern = re.compile(r'([a-z])(\')([a-z])')
+        quote = re.compile(r'\'')
+        while True:
+            match_obj = re.search(sinqt_pattern, text)
+            if match_obj:
+                new = match_obj.group(0).replace('\'', '7')
+                text = text.replace(match_obj.group(0), new)
+            else:
+                break
+        text = quote.sub('', text)
+
+        return text        
+
 
     @classmethod
     def kana2alphab(cls, text):
@@ -375,8 +391,8 @@ class KeyinputFilter:
         """
 
         ######################################################
-        # result = KeyinputFilter._preprocess(ifile_name)
-        result = KeyinputFilter._English_corpus(ifile_name)
+        result = KeyinputFilter._preprocess(ifile_name)
+        # result = KeyinputFilter._English_corpus(ifile_name)
         # result = KeyinputFilter.Japanese_corpus(text_data)
         ######################################################
 
