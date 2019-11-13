@@ -80,10 +80,10 @@ class Seq2seq(chainer.Chain):
 
         return loss
 
-    def check_num_of_character(self, wy, xs, s_vocab, t_vocab, max_length):
+    def check_num_of_character(self, wy, x, s_vocab, t_vocab, max_length):
         """
         check same or not 
-        between number of character of result word and number of character of answer
+        between [number of character of result word] and [number of character of answer word]
         """
 
         dummy = -100000000
@@ -92,12 +92,10 @@ class Seq2seq(chainer.Chain):
         for i in range(wy.data[0].shape[0]):
             ys = self.xp.argmax(wy.data, axis=1).astype(numpy.int32)
 
-            if ys[0] == 1 or ys[0] == 0 or xs[0][-(i+1)]:
+            if ys[0] == 1 or ys[0] == 0 or x == 0:
                 return ys
-            x_key = [k1 for k1, v1 in s_vocab.items() if v1 == xs[0][-(i+1)]]
-            y_key = [k2 for k2, v2 in t_vocab.items() if v2 == ys[0]]
 
-            if len(x_key[0]) == len(y_key[0]):
+            if len(s_vocab[int(x)]) == len(t_vocab[int(ys[0])]):
                 return ys
             else:
                 wy.array[0][ys[0]] = dummy
@@ -113,6 +111,16 @@ class Seq2seq(chainer.Chain):
             h, c, _ = self.encoder(None, None, exs)
             ys = self.xp.full(batch, EOS, numpy.int32)
             result = []
+
+            # make vocabulary list
+            # (because dictionary type is too slow)
+            sv_list = [k1 for k1, v1 in self.s_vocab.items()]
+            tv_list = [k2 for k2, v2 in self.t_vocab.items()]
+            sv_list.insert(0, sv_list[-1])
+            sv_list.insert(0, sv_list[-2])
+            tv_list.insert(0, sv_list[-1])
+            tv_list.insert(0, sv_list[-2])
+            
             for i in range(max_length):
                 eys = self.embed_y(ys)
                 eys = F.split_axis(eys, batch, 0)
@@ -121,7 +129,7 @@ class Seq2seq(chainer.Chain):
                 wy = self.W(cys)
                 if len(xs[0]) > i:
                     ys = self.check_num_of_character(
-                        wy, xs, self.s_vocab, self.t_vocab, max_length)
+                        wy, xs[0][-(i+1)], sv_list, tv_list, max_length)
                 else:
                     ys = self.xp.argmax(wy.array, axis=1).astype(numpy.int32)
                 result.append(ys)

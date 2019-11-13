@@ -42,11 +42,11 @@ def check_quit(text):
         print(">> bye.")
         exit()
 
-def main_process(test_sentence):
+def pre_process(test_sentence):
     test_sentence = test_sentence.lower()
     check_quit(test_sentence)
-    test_sentence = tf2.KeyinputFilter.alphab2num(test_sentence)
     test_sentence = exchange_input(test_sentence)
+    test_sentence = tf2.KeyinputFilter.alphab2num(test_sentence)
     return test_sentence
 
 def main():
@@ -94,6 +94,8 @@ def main():
     # # interpriter version
     # #######################################
     # print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    # print("$$$  input ... alphabets or      $$$")
+    # print("$$$           number sequence    $$$")
     # print("$$$  '5'...space   '6'...period  $$$")
     # print("$$$                              $$$")
     # print("$$$  if you want to exit,        $$$")
@@ -103,13 +105,15 @@ def main():
     # while True:
     #     print(">> please input test sentence.")
     #     test_sentence = input()
-    #     test_sentence = main_process(test_sentence)
+    #     test_sentence = pre_process(test_sentence)
     #     test_source = load_data_from_str(source_ids, test_sentence)
     #     result = model.translate([model.xp.array(test_source[0])])[0]     
     #     result_sentence = ' '.join([target_words[y] for y in result])
     #     print("--------------------------------------")
     #     print('# source : ' + test_sentence)
     #     print('# result : ' + result_sentence)
+    #     print("--------------------------------------")
+
 
     ##########################################
     # file writing version
@@ -117,9 +121,8 @@ def main():
     if args.testset is not None:
         test_data = load_data_file(args.testset)
         answer_data = load_data_file(args.answerset)
-        result_text = []
         for i in range(len(test_data)):
-            test_sentence = main_process(test_data[i])
+            test_sentence = pre_process(test_data[i])
             test_source = load_data_from_str(source_ids, test_sentence)
             result = model.translate([model.xp.array(test_source[0])])[0]        
             result_sentence = ' '.join([target_words[y] for y in result])
@@ -128,13 +131,6 @@ def main():
             print('# source : ' + test_sentence)
             print('# result : ' + result_sentence)
             print("# answer : " + answer_data[i])
-
-            result_text.append(result_sentence)
-        output = '\n'.join(result_text)
-
-        with open("result_2.en", encoding="utf-8", mode="w") as f:
-            f.write(output)
-            f.close()
 
 if __name__ == '__main__':
     main()
